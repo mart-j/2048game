@@ -1,12 +1,10 @@
 export const transformGridIntoRows = (grid: number[]) => {
   const arrays: number[][] = [];
-  const loop = () => {
-    while (grid.length > 0) {
-      arrays.push(grid.splice(0, 4));
-      setTimeout(loop, 0);
-    }
-  };
-  loop();
+
+  while (grid.length > 0) {
+    arrays.push(grid.splice(0, 4));
+  }
+
   return arrays;
 };
 
