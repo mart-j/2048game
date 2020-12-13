@@ -4,9 +4,13 @@ import Button from './components/button/Button';
 import Score from './components/score/Score';
 import Header from './components/header/Header';
 import { GRID } from './helpers/GRID';
-import { randomAvailableNumberGenerator } from './helpers/RandomNumberGenerator';
-import { sumNumbersToLeft, sumNumbersToRight } from './helpers/SumNumbers';
-import { transformGridIntoRows, transformGridIntoColumns } from './helpers/TransformGrid';
+import {
+  randomAvailableNumberGenerator,
+  onMoveDown,
+  onMoveUp,
+  onMoveRight,
+  onMoveLeft,
+} from './helpers/TransformGrid';
 
 const App = () => {
   const [rightAnimation, setRightAnimation] = useState(false);
@@ -23,6 +27,22 @@ const App = () => {
   const container = useRef<HTMLDivElement>(null);
   const score = useRef(0);
   const moveBack = useRef<{ curr: number[] | undefined; prev: number[] | undefined }>();
+
+  useEffect(() => {
+    container.current!.focus();
+  }, []);
+
+  useEffect(() => {
+    if (moveBack.current) {
+      moveBack.current!.prev = grid;
+      moveBack.current!.prev = moveBack.current?.curr;
+    }
+  }, [toggleMove]);
+
+  useEffect(() => {
+    getOneSquareAfterMove();
+    score.current = grid.reduce((a, c) => a + c);
+  }, [toggleMove]);
 
   const keyPressHandler = (key: string) => {
     if (!youLose) {
@@ -48,40 +68,34 @@ const App = () => {
   };
 
   const stopAllAnimations = () => {
-    getNewNumberIndex.current = -1;
-    getNewGridNumbers.current = [-1, -1];
     setRightAnimation(false);
     setLeftAnimation(false);
     setdownAnimation(false);
     setUpAnimation(false);
+    getNewNumberIndex.current = -1;
+    getNewGridNumbers.current = [-1, -1];
   };
 
   const endOfAnimationHandler = () => {
     stopAllAnimations();
+
     if (rightAnimation) {
-      onMoveRight();
+      setGrid(onMoveRight(grid));
+      settoggleMove(!toggleMove);
     }
     if (leftAnimation) {
-      onMoveLeft();
+      setGrid(onMoveLeft(grid));
+      settoggleMove(!toggleMove);
     }
     if (downAnimation) {
-      onMoveDown();
+      setGrid(onMoveDown(grid));
+      settoggleMove(!toggleMove);
     }
     if (upAnimation) {
-      onMoveUp();
+      setGrid(onMoveUp(grid));
+      settoggleMove(!toggleMove);
     }
   };
-
-  useEffect(() => {
-    container.current!.focus();
-  }, []);
-
-  useEffect(() => {
-    if (moveBack.current) {
-      moveBack.current!.prev = grid;
-      moveBack.current!.prev = moveBack.current?.curr;
-    }
-  }, [toggleMove]);
 
   const startNewGame = () => {
     score.current = 0;
@@ -109,84 +123,14 @@ const App = () => {
       newGrid[number] = 4;
     }
     getNewNumberIndex.current = number;
-
     setGrid(newGrid);
   };
-
-  useEffect(() => {
-    getOneSquareAfterMove();
-    score.current = grid.reduce((a, c) => a + c);
-  }, [toggleMove]);
 
   const oneMoveBack = () => {
     if (moveBack.current) {
       setGrid(moveBack.current!.prev!);
     }
     setYouLose(false);
-  };
-
-  const onMoveRight = () => {
-    const filteredNums = transformGridIntoRows(grid).map((numArr) => {
-      return [...numArr.filter((num) => num), ...numArr.filter((num) => !num)];
-    });
-    const summedNums: number[][] = filteredNums.map((num) => {
-      return [
-        [...sumNumbersToRight(num).filter((numb) => numb)],
-        [...sumNumbersToRight(num).filter((numb) => !numb)],
-      ]
-        .reverse()
-        .flat();
-    });
-
-    setGrid(summedNums.flat());
-    settoggleMove(!toggleMove);
-  };
-
-  const onMoveLeft = () => {
-    const filteredNums = transformGridIntoRows(grid).map((numArr) => {
-      return [...numArr.filter((num) => num), ...numArr.filter((num) => !num)];
-    });
-    const summedNums: number[][] = filteredNums.map((num) => {
-      return [
-        ...sumNumbersToLeft(num).filter((numb) => numb),
-        ...sumNumbersToLeft(num).filter((numb) => !numb),
-      ];
-    });
-    setGrid(summedNums.flat());
-    settoggleMove(!toggleMove);
-  };
-
-  const onMoveUp = () => {
-    const filteredNums = transformGridIntoColumns(grid).map((numArr) => {
-      return [...numArr.filter((num) => num), ...numArr.filter((num) => !num)].flat();
-    });
-    const summedNums: number[][] = filteredNums.map((num) => {
-      return [
-        ...sumNumbersToLeft(num).filter((numb) => numb),
-        ...sumNumbersToLeft(num).filter((numb) => !numb),
-      ];
-    });
-    const result = transformGridIntoColumns(summedNums.flat());
-    setGrid(result.flat());
-    settoggleMove(!toggleMove);
-  };
-
-  const onMoveDown = () => {
-    const filteredNums = transformGridIntoColumns(grid).map((numArr) => {
-      return [...numArr.filter((num) => !num), ...numArr.filter((num) => num)].flat();
-    });
-
-    const summedNums: number[][] = filteredNums.map((num) => {
-      return [
-        [...sumNumbersToRight(num).filter((numb) => numb)],
-        [...sumNumbersToRight(num).filter((numb) => !numb)],
-      ]
-        .reverse()
-        .flat();
-    });
-    const result = transformGridIntoColumns(summedNums.flat());
-    setGrid(result.flat());
-    settoggleMove(!toggleMove);
   };
 
   return (
