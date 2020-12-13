@@ -1,6 +1,6 @@
 {
   "name": "project",
-  "homepage": "http://mart-j.github.io/2048-game",
+  "homepage": "http://mart-j.github.io/2048game",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
