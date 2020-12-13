@@ -14,10 +14,10 @@ const App = () => {
   const [downAnimation, setdownAnimation] = useState(false);
   const [upAnimation, setUpAnimation] = useState(false);
   const [grid, setGrid] = useState(GRID);
-  const [countWhenFourAppears, setCountWhenFourApperars] = useState(0);
   const [toggleMove, settoggleMove] = useState(false);
   const [youLose, setYouLose] = useState(false);
 
+  const countWhenFourAppears = useRef(0);
   const getNewNumberIndex = useRef<number>();
   const getNewGridNumbers = useRef<number[]>([-1, -1]);
   const container = useRef<HTMLDivElement>(null);
@@ -101,11 +101,11 @@ const App = () => {
       setYouLose(true);
     }
     const newGrid = [...grid];
-    if (countWhenFourAppears < 10) {
-      setCountWhenFourApperars(countWhenFourAppears + 1);
+    if (countWhenFourAppears.current < 10) {
+      countWhenFourAppears.current += 1;
       newGrid[number] = 2;
     } else {
-      setCountWhenFourApperars(0);
+      countWhenFourAppears.current = 0;
       newGrid[number] = 4;
     }
     getNewNumberIndex.current = number;
@@ -122,7 +122,6 @@ const App = () => {
     if (moveBack.current) {
       setGrid(moveBack.current!.prev!);
     }
-
     setYouLose(false);
   };
 
@@ -140,7 +139,6 @@ const App = () => {
     });
 
     setGrid(summedNums.flat());
-
     settoggleMove(!toggleMove);
   };
 
@@ -169,7 +167,6 @@ const App = () => {
       ];
     });
     const result = transformGridIntoColumns(summedNums.flat());
-
     setGrid(result.flat());
     settoggleMove(!toggleMove);
   };
@@ -191,8 +188,6 @@ const App = () => {
     setGrid(result.flat());
     settoggleMove(!toggleMove);
   };
-
-  useEffect(() => {}, [toggleMove]);
 
   return (
     <div
