@@ -1,0 +1,22 @@
+.buttonWrapper {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+
+.button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: 'Orbitron', sans-serif;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 3px;
+  background-color: rgb(20, 150, 182);
+  color: rgb(247, 247, 247);
+  box-shadow: 3px 3px 5px rgba(20, 20, 20, 0.37);
+  transition: all .4s;
+  &:hover {
+    background-color: rgb(8, 89, 109);
+  }
+}
